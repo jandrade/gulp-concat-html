@@ -1,0 +1,8 @@
+<% _.forEach(folders, function(folder) { %>
+<ul>
+	<li class="sg-menu-title"><h2><%= folder.name %></h2></li>
+	<% _.forEach(folder.items, function(name) { %>
+	<li><a href="#<%= name %>"><%= name %> <i class="fa fa-chevron-right"></i></a></li>
+	<% }); %>
+</ul>
+<% }); %>

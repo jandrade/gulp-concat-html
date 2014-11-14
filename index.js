@@ -7,6 +7,7 @@ var through = require('through2'),
 	fs = require('fs'),
 	path = require('path'),
 	_ = require('lodash'),
+	cheerio = require('cheerio'),
 	PluginError = gutil.PluginError;
 
 /**
@@ -19,7 +20,7 @@ var itemsCollection = [],
 	navTemplate = fs.readFileSync(__dirname + '/templates/nav.html').toString();
 
 // consts
-const PLUGIN_NAME = 'concat-html';
+var PLUGIN_NAME = 'concat-html';
 
 // Used to replace anything within a start and end tag.
 var replaceRegExp = /<!--\s*?styleguide\s*?-->[\s\S]*?<!--\s*?endstyleguide\s*?-->/g;
@@ -45,6 +46,16 @@ function build() {
 			file: 'item.html'
 		};
 
+		$ = cheerio.load(file.contents.toString());
+
+		if ($(".sg-code").length) {
+			data.code = $(".sg-code").html().toString().replace(/\</gi, '&lt;');	
+		}
+
+		if ($(".sg-example").length) {
+			data.contents = $(".sg-example").html().toString();
+		}
+		
 		var currentDir = path.dirname(file.relative);
 
 		if (dir !== currentDir) {
@@ -117,7 +128,7 @@ function replaceHtml(source, dest) {
 
 	// returning the file stream
 	return stream;
-};
+}
 
 var concatHtml = {
 	replaceHtml: replaceHtml,
